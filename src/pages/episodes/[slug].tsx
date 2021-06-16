@@ -2,11 +2,13 @@ import { format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { GetStaticProps, GetStaticPaths } from 'next';
 import Link from 'next/link';
+import Head from 'next/head';
 import { useRouter } from 'next/router'
 import { api } from '../../services/api';
 import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString';
 import Image from 'next/image';
 import styles from './episode.module.scss';
+import { usePlayer } from '../../contexts/PlayerContext';
 
 type Episode = {
     id: string,
@@ -26,17 +28,27 @@ type EpisodeProps = {
 
 export default function Episodes({ episode }: EpisodeProps) {
     const router = useRouter(); //React "hook" so pode ser usado dentro de componentes. TODO: estudar "hook" em React
+    const { play } = usePlayer(); //using/importing PlaterContext from function usePlayer in PlayerContext.tsx
     return (
         //<h1>{router.query.slug}</h1>
         <div className={styles.episode}>
+
+            <Head>
+                <title>{episode.title}</title>
+            </Head>
+
             <div className={styles.thumbnailContainer}>
                 <Link href="/">
                     <button type="button">
                         <img src="/arrow-left.svg" alt="Voltar" />
                     </button>
                 </Link>
-                <Image width={700} height={160} src={episode.thumbnail} objectFit="cover"/>
-                <button type="button">
+                <Image
+                  width={700}
+                  height={160}
+                  src={episode.thumbnail}
+                  objectFit="cover" />
+                <button type="button" onClick={() => play(episode)}> 
                     <img src="/play.svg" alt="Tocar Episodio" />
                 </button>
             </div>
